@@ -1,0 +1,46 @@
+#!/bin/bash
+
+
+##see two files and their formats to begin with
+# join two files line by line
+paste mutSNPs_taxa.txt mutSNPs_biSNPmatrix.txt > mutSNPs_matrixed_merged.txt
+
+# make period files
+awk -F ' ' '$2 < 2002' <mutSNPs_matrixed_merged.txt > Pre_early.txt
+awk -F ' ' '$2 >2005 && $2 <2016' <mutSNPs_matrixed_merged.txt > Pre_late.txt
+awk -F ' ' '$2 == 2016' <mutSNPs_matrixed_merged.txt > 2016.txt
+awk -F ' ' '$2 == 2017' <mutSNPs_matrixed_merged.txt > 2017.txt
+awk -F ' ' '$2 == 2018' <mutSNPs_matrixed_merged.txt > 2018.txt
+awk -F ' ' '$2 == 2019' <mutSNPs_matrixed_merged.txt > 2019.txt
+awk -F ' ' '$2 == 2020' <mutSNPs_matrixed_merged.txt > 2020.txt
+
+# make matrix files by period
+cat Pre_early.txt| awk -F ' ' '{print $3}' > matrix_Pre_early.txt
+cat Pre_late.txt| awk -F ' ' '{print $3}' > matrix_Pre_late.txt
+cat 2016.txt| awk -F ' ' '{print $3}' > matrix_2016.txt
+cat 2017.txt| awk -F ' ' '{print $3}' > matrix_2017.txt
+cat 2018.txt| awk -F ' ' '{print $3}' > matrix_2018.txt
+cat 2019.txt| awk -F ' ' '{print $3}' > matrix_2019.txt
+cat 2020.txt| awk -F ' ' '{print $3}' > matrix_2020.txt
+# convert files to csv format
+sed 's/./&,/g' <matrix_Pre_early.txt > matrix_Pre_early.csv
+sed 's/./&,/g' <matrix_Pre_late.txt > matrix_Pre_late.csv
+sed 's/./&,/g' <matrix_2016.txt > matrix_2016.csv
+sed 's/./&,/g' <matrix_2017.txt > matrix_2017.csv
+sed 's/./&,/g' <matrix_2018.txt > matrix_2018.csv
+sed 's/./&,/g' <matrix_2019.txt > matrix_2019.csv
+sed 's/./&,/g' <matrix_2020.txt > matrix_2020.csv
+
+# do sum of every columns
+awk -F ',' '{for (i=1;i<=NF;i++) sum[i]+=$i;}; END{for (i in sum) print "for column "i" is " sum[i];}' <matrix_Pre_early.csv > Pre_early_summatrix.txt
+awk -F ',' '{for (i=1;i<=NF;i++) sum[i]+=$i;}; END{for (i in sum) print "for column "i" is " sum[i];}' <matrix_Pre_late.csv > Pre_late_summatrix.txt
+awk -F ',' '{for (i=1;i<=NF;i++) sum[i]+=$i;}; END{for (i in sum) print "for column "i" is " sum[i];}' <matrix_2016.csv > 2016_summatrix.txt
+awk -F ',' '{for (i=1;i<=NF;i++) sum[i]+=$i;}; END{for (i in sum) print "for column "i" is " sum[i];}' <matrix_2017.csv > 2017_summatrix.txt
+awk -F ',' '{for (i=1;i<=NF;i++) sum[i]+=$i;}; END{for (i in sum) print "for column "i" is " sum[i];}' <matrix_2018.csv > 2018_summatrix.txt
+awk -F ',' '{for (i=1;i<=NF;i++) sum[i]+=$i;}; END{for (i in sum) print "for column "i" is " sum[i];}' <matrix_2019.csv > 2019_summatrix.txt
+awk -F ',' '{for (i=1;i<=NF;i++) sum[i]+=$i;}; END{for (i in sum) print "for column "i" is " sum[i];}' <matrix_2020.csv > 2020_summatrix.txt
+
+
+# sort sum file based on column number smallest to highest, get rid of last column (sum=0)
+# calculate frequency (total number of sample as denominator)
+# put frequency data by periods in excel and calculate RMSEs
